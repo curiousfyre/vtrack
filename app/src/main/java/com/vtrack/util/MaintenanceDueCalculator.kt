@@ -20,9 +20,10 @@ object MaintenanceDueCalculator {
     fun calculate(
         type: MaintenanceType,
         lastRecord: MaintenanceRecord?,
-        currentOdometer: Int
+        currentOdometer: Int,
+        vehicleInitialOdometer: Int = 0
     ): MaintenanceStatus {
-        val baseOdometer = lastRecord?.odometer ?: 0
+        val baseOdometer = lastRecord?.odometer ?: vehicleInitialOdometer
         val milesSince = currentOdometer - baseOdometer
         val milesUntilDue = type.intervalMiles - milesSince
         val percentUsed = if (type.intervalMiles > 0) milesSince.toDouble() / type.intervalMiles else 0.0

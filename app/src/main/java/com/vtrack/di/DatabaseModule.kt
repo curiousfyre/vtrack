@@ -2,11 +2,11 @@ package com.vtrack.di
 
 import android.content.Context
 import androidx.room.Room
-import com.vtrack.data.local.AppDatabase
-import com.vtrack.data.local.dao.FuelEntryDao
-import com.vtrack.data.local.dao.MaintenanceRecordDao
-import com.vtrack.data.local.dao.MaintenanceTypeDao
-import com.vtrack.data.local.dao.VehicleDao
+import com.vtrack.data.db.AppDatabase
+import com.vtrack.data.db.dao.FuelEntryDao
+import com.vtrack.data.db.dao.MaintenanceRecordDao
+import com.vtrack.data.db.dao.MaintenanceTypeDao
+import com.vtrack.data.db.dao.VehicleDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

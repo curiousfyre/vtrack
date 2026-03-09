@@ -2,7 +2,7 @@ package com.vtrack.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+
 import com.vtrack.data.db.dao.FuelEntryDao
 import com.vtrack.data.db.dao.MaintenanceRecordDao
 import com.vtrack.data.db.dao.MaintenanceTypeDao
@@ -17,7 +17,6 @@ import com.vtrack.data.model.Vehicle
     version = 1,
     exportSchema = true
 )
-@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vehicleDao(): VehicleDao
     abstract fun fuelEntryDao(): FuelEntryDao

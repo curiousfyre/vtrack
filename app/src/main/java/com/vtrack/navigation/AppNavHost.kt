@@ -56,7 +56,12 @@ fun AppNavHost() {
             TopAppBar(
                 title = { Text("VTrack") },
                 actions = {
-                    if (currentRoute in bottomBarRoutes) {
+                    val overflowMenuRoutes = bottomBarRoutes + setOf(
+                        Route.VehicleList.route,
+                        Route.Stats.route,
+                        Route.Settings.route
+                    )
+                    if (currentRoute in overflowMenuRoutes) {
                         var menuExpanded by remember { mutableStateOf(false) }
                         Box {
                             IconButton(onClick = { menuExpanded = true }) {
@@ -167,9 +172,8 @@ fun AppNavHost() {
             }
             composable(Route.VehicleList.route) {
                 VehicleListScreen(
-                    navController = navController,
-                    onAddVehicle = { navController.navigate(Route.VehicleForm.create()) },
-                    onEditVehicle = { id -> navController.navigate(Route.VehicleForm.create(id)) }
+                    onNavigateToAdd = { navController.navigate(Route.VehicleForm.create()) },
+                    onNavigateToEdit = { id -> navController.navigate(Route.VehicleForm.create(id)) }
                 )
             }
             composable(

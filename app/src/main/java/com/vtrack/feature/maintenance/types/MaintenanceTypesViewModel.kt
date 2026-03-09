@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.vtrack.data.model.MaintenanceType
 import com.vtrack.data.repository.FuelRepository
 import com.vtrack.data.repository.MaintenanceRepository
+import com.vtrack.data.repository.VehicleRepository
 import com.vtrack.util.MaintenanceDueCalculator
 import com.vtrack.util.MaintenanceStatus
 import com.vtrack.util.PreferencesManager
@@ -31,6 +32,7 @@ data class MaintenanceTypesUiState(
 class MaintenanceTypesViewModel @Inject constructor(
     private val maintenanceRepository: MaintenanceRepository,
     private val fuelRepository: FuelRepository,
+    private val vehicleRepository: VehicleRepository,
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
@@ -41,9 +43,11 @@ class MaintenanceTypesViewModel @Inject constructor(
             } else {
                 maintenanceRepository.getAllTypesForVehicle(vehicleId).map { types ->
                     val currentOdometer = fuelRepository.getCurrentOdometer(vehicleId)
+                    val vehicle = vehicleRepository.getById(vehicleId)
+                    val initialOdometer = vehicle?.initialOdometer ?: 0
                     val statuses = types.map { type ->
                         val lastRecord = maintenanceRepository.getLatestRecordForType(type.id)
-                        MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer)
+                        MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, initialOdometer)
                     }
                     MaintenanceTypesUiState(
                         statuses = statuses,

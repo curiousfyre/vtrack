@@ -30,7 +30,7 @@ class MaintenanceCheckWorker @AssistedInject constructor(
 
             for (type in types) {
                 val lastRecord = maintenanceRepository.getLatestRecordForType(type.id)
-                val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer)
+                val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, vehicle.initialOdometer)
                 val notificationId = (vehicle.id * 10000 + type.id).toInt()
 
                 when (status.urgency) {

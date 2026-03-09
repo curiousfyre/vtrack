@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.vtrack.data.model.MaintenanceRecord
 import com.vtrack.data.repository.FuelRepository
 import com.vtrack.data.repository.MaintenanceRepository
+import com.vtrack.data.repository.VehicleRepository
 import com.vtrack.util.MaintenanceDueCalculator
 import com.vtrack.util.MaintenanceStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,8 @@ data class MaintenanceHistoryUiState(
 class MaintenanceHistoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val maintenanceRepository: MaintenanceRepository,
-    private val fuelRepository: FuelRepository
+    private val fuelRepository: FuelRepository,
+    private val vehicleRepository: VehicleRepository
 ) : ViewModel() {
 
     private val typeId: Long = savedStateHandle["typeId"] ?: -1L
@@ -51,8 +53,10 @@ class MaintenanceHistoryViewModel @Inject constructor(
             }
 
             val currentOdometer = fuelRepository.getCurrentOdometer(type.vehicleId)
+            val vehicle = vehicleRepository.getById(type.vehicleId)
+            val initialOdometer = vehicle?.initialOdometer ?: 0
             val lastRecord = maintenanceRepository.getLatestRecordForType(typeId)
-            val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer)
+            val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, initialOdometer)
 
             _uiState.value = MaintenanceHistoryUiState(
                 typeName = type.name,
@@ -71,8 +75,10 @@ class MaintenanceHistoryViewModel @Inject constructor(
                 // Recalculate status when records change
                 val type = maintenanceRepository.getTypeById(typeId) ?: return@collect
                 val currentOdometer = fuelRepository.getCurrentOdometer(type.vehicleId)
+                val vehicleForCalc = vehicleRepository.getById(type.vehicleId)
+                val initOdo = vehicleForCalc?.initialOdometer ?: 0
                 val lastRecord = maintenanceRepository.getLatestRecordForType(typeId)
-                val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer)
+                val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, initOdo)
                 _uiState.value = _uiState.value.copy(status = status)
             }
         }

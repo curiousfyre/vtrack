@@ -77,7 +77,7 @@ class DashboardViewModel @Inject constructor(
 
                 val totalFuelSpend = entries.sumOf { it.totalCost }
 
-                val maintenanceStatuses = calculateMaintenanceStatuses(vehicle.id, currentOdometer)
+                val maintenanceStatuses = calculateMaintenanceStatuses(vehicle.id, currentOdometer, vehicle.initialOdometer)
 
                 flowOf(
                     DashboardUiState(
@@ -137,12 +137,13 @@ class DashboardViewModel @Inject constructor(
 
     private suspend fun calculateMaintenanceStatuses(
         vehicleId: Long,
-        currentOdometer: Int
+        currentOdometer: Int,
+        vehicleInitialOdometer: Int
     ): List<MaintenanceStatus> {
         val types = maintenanceRepository.getAllActiveTypesForVehicle(vehicleId)
         return types.map { type ->
             val lastRecord = maintenanceRepository.getLatestRecordForType(type.id)
-            MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer)
+            MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, vehicleInitialOdometer)
         }.filter { it.urgency != MaintenanceUrgency.OK }
             .sortedWith(compareByDescending<MaintenanceStatus> {
                 when (it.urgency) {
