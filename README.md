@@ -93,8 +93,19 @@ scrcpy -s emulator-5554 --window-title "VTrack Demo"    # custom title
 scrcpy -s emulator-5554 --record vtrack-demo.mp4         # record session
 ```
 
+### Stopping the Emulator
+
+```bash
+# Cleanest method — via adb
+~/Android/Sdk/platform-tools/adb emu kill
+
+# Fallback — kill the process directly
+pkill -f "emulator -avd"
+```
+
+The GUI window closes automatically when the emulator process dies.
+
 ### Emulator Tips
 
 - Enable on-screen keyboard: `adb shell settings put secure show_ime_with_hard_keyboard 1`
-- Kill emulator: `adb emu kill`
 - If emulator shows ANR warnings, use `-gpu host` instead of `-gpu swiftshader_indirect`
