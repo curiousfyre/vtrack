@@ -12,3 +12,4 @@ local.properties
 /app/schemas
 *.jks
 *.keystore
+.kotlin/
