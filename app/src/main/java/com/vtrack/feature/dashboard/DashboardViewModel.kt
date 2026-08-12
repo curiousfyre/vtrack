@@ -61,7 +61,10 @@ class DashboardViewModel @Inject constructor(
 
             fuelRepository.getAllForVehicle(vehicle.id).flatMapLatest { entries ->
                 val currentOdometer = fuelRepository.getCurrentOdometer(vehicle.id)
-                val totalMiles = currentOdometer - vehicle.initialOdometer
+                val baseOdometer = vehicle.initialOdometer
+                    ?: fuelRepository.getFirstEntryOdometer(vehicle.id)
+                    ?: currentOdometer
+                val totalMiles = currentOdometer - baseOdometer
                 val sortedEntries = entries.sortedByDescending { it.date }
                 val lastFillUp = sortedEntries.firstOrNull()
 
@@ -77,7 +80,7 @@ class DashboardViewModel @Inject constructor(
 
                 val totalFuelSpend = entries.sumOf { it.totalCost }
 
-                val maintenanceStatuses = calculateMaintenanceStatuses(vehicle.id, currentOdometer, vehicle.initialOdometer)
+                val maintenanceStatuses = calculateMaintenanceStatuses(vehicle.id, currentOdometer, baseOdometer)
 
                 flowOf(
                     DashboardUiState(

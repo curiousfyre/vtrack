@@ -182,10 +182,10 @@ fun VehicleFormScreen(
                         viewModel.updateInitialOdometer(value)
                     }
                 },
-                label = { Text("Initial Odometer") },
+                label = { Text("Initial Odometer (optional)") },
                 placeholder = { Text("e.g., 25000") },
                 singleLine = true,
-                supportingText = { Text("Current mileage in miles") },
+                supportingText = { Text("Leave blank if unknown") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

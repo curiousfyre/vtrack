@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,17 +51,34 @@ fun AppNavHost() {
     )
     val showBottomBar = currentRoute in bottomBarRoutes
 
+    val overflowOnlyRoutes = setOf(
+        Route.VehicleList.route,
+        Route.Stats.route,
+        Route.Settings.route
+    )
+    val showBackArrow = currentRoute in overflowOnlyRoutes
+
+    val topBarTitle = when (currentRoute) {
+        Route.VehicleList.route -> "Vehicles"
+        Route.Stats.route -> "Statistics"
+        Route.Settings.route -> "Settings"
+        else -> "VTrack"
+    }
+
     Scaffold(
         bottomBar = { if (showBottomBar) BottomNavBar(navController) },
         topBar = {
             TopAppBar(
-                title = { Text("VTrack") },
+                title = { Text(topBarTitle) },
+                navigationIcon = {
+                    if (showBackArrow) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                },
                 actions = {
-                    val overflowMenuRoutes = bottomBarRoutes + setOf(
-                        Route.VehicleList.route,
-                        Route.Stats.route,
-                        Route.Settings.route
-                    )
+                    val overflowMenuRoutes = bottomBarRoutes + overflowOnlyRoutes
                     if (currentRoute in overflowMenuRoutes) {
                         var menuExpanded by remember { mutableStateOf(false) }
                         Box {

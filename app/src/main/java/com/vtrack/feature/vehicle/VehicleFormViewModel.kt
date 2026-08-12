@@ -46,7 +46,7 @@ class VehicleFormViewModel @Inject constructor(
                             make = vehicle.make,
                             model = vehicle.model,
                             year = vehicle.year.toString(),
-                            initialOdometer = vehicle.initialOdometer.toString(),
+                            initialOdometer = vehicle.initialOdometer?.toString() ?: "",
                             isEditing = true
                         )
                     }
@@ -83,10 +83,13 @@ class VehicleFormViewModel @Inject constructor(
             _uiState.update { it.copy(error = "Enter a valid year") }
             return
         }
-        val odometer = state.initialOdometer.toIntOrNull()
-        if (odometer == null || odometer < 0) {
-            _uiState.update { it.copy(error = "Enter a valid odometer reading") }
-            return
+        val odometer = if (state.initialOdometer.isBlank()) null else {
+            val parsed = state.initialOdometer.toIntOrNull()
+            if (parsed == null || parsed < 0) {
+                _uiState.update { it.copy(error = "Enter a valid odometer reading or leave blank") }
+                return
+            }
+            parsed
         }
 
         viewModelScope.launch {

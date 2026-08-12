@@ -10,7 +10,7 @@ data class Vehicle(
     val make: String,
     val model: String,
     val year: Int,
-    val initialOdometer: Int,
+    val initialOdometer: Int? = null,
     val isActive: Boolean = true,
     val createdAt: Long = System.currentTimeMillis()
 )

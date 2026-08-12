@@ -20,6 +20,9 @@ interface FuelEntryDao {
     @Query("SELECT MAX(odometer) FROM fuel_entries WHERE vehicleId = :vehicleId")
     suspend fun getLatestOdometer(vehicleId: Long): Int?
 
+    @Query("SELECT MIN(odometer) FROM fuel_entries WHERE vehicleId = :vehicleId")
+    suspend fun getFirstOdometer(vehicleId: Long): Int?
+
     @Query(
         "SELECT * FROM fuel_entries " +
         "WHERE vehicleId = :vehicleId AND isPartialFill = 0 AND odometer < :currentOdometer " +

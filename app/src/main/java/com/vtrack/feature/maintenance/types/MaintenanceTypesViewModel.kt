@@ -44,7 +44,9 @@ class MaintenanceTypesViewModel @Inject constructor(
                 maintenanceRepository.getAllTypesForVehicle(vehicleId).map { types ->
                     val currentOdometer = fuelRepository.getCurrentOdometer(vehicleId)
                     val vehicle = vehicleRepository.getById(vehicleId)
-                    val initialOdometer = vehicle?.initialOdometer ?: 0
+                    val initialOdometer = vehicle?.initialOdometer
+                        ?: fuelRepository.getFirstEntryOdometer(vehicleId)
+                        ?: currentOdometer
                     val statuses = types.map { type ->
                         val lastRecord = maintenanceRepository.getLatestRecordForType(type.id)
                         MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, initialOdometer)

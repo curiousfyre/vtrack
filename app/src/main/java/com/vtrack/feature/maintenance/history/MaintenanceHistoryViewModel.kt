@@ -54,7 +54,9 @@ class MaintenanceHistoryViewModel @Inject constructor(
 
             val currentOdometer = fuelRepository.getCurrentOdometer(type.vehicleId)
             val vehicle = vehicleRepository.getById(type.vehicleId)
-            val initialOdometer = vehicle?.initialOdometer ?: 0
+            val initialOdometer = vehicle?.initialOdometer
+                ?: fuelRepository.getFirstEntryOdometer(type.vehicleId)
+                ?: currentOdometer
             val lastRecord = maintenanceRepository.getLatestRecordForType(typeId)
             val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, initialOdometer)
 
@@ -76,7 +78,9 @@ class MaintenanceHistoryViewModel @Inject constructor(
                 val type = maintenanceRepository.getTypeById(typeId) ?: return@collect
                 val currentOdometer = fuelRepository.getCurrentOdometer(type.vehicleId)
                 val vehicleForCalc = vehicleRepository.getById(type.vehicleId)
-                val initOdo = vehicleForCalc?.initialOdometer ?: 0
+                val initOdo = vehicleForCalc?.initialOdometer
+                    ?: fuelRepository.getFirstEntryOdometer(type.vehicleId)
+                    ?: currentOdometer
                 val lastRecord = maintenanceRepository.getLatestRecordForType(typeId)
                 val status = MaintenanceDueCalculator.calculate(type, lastRecord, currentOdometer, initOdo)
                 _uiState.value = _uiState.value.copy(status = status)

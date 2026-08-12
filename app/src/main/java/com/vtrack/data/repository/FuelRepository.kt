@@ -25,6 +25,9 @@ class FuelRepository @Inject constructor(
         return vehicle?.initialOdometer ?: 0
     }
 
+    suspend fun getFirstEntryOdometer(vehicleId: Long): Int? =
+        fuelEntryDao.getFirstOdometer(vehicleId)
+
     suspend fun getPreviousFullFill(vehicleId: Long, currentOdometer: Int): FuelEntry? =
         fuelEntryDao.getPreviousFullFill(vehicleId, currentOdometer)
 
