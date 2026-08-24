@@ -16,7 +16,7 @@ import com.vtrack.data.model.Vehicle
 
 @Database(
     entities = [Vehicle::class, FuelEntry::class, MaintenanceType::class, MaintenanceRecord::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -43,6 +43,12 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL("INSERT INTO vehicles_new SELECT * FROM vehicles")
                 db.execSQL("DROP TABLE vehicles")
                 db.execSQL("ALTER TABLE vehicles_new RENAME TO vehicles")
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE maintenance_types ADD COLUMN nextDueOdometer INTEGER DEFAULT NULL")
             }
         }
     }

@@ -33,6 +33,7 @@ data class MaintenanceTypeFormUiState(
     val name: String = "",
     val intervalMiles: String = "",
     val intervalMonths: String = "",
+    val nextDueOdometer: String = "",
     val description: String = "",
     val isEditing: Boolean = false,
     val isSaved: Boolean = false,
@@ -61,6 +62,7 @@ class MaintenanceTypeFormViewModel @Inject constructor(
                             name = type.name,
                             intervalMiles = type.intervalMiles.toString(),
                             intervalMonths = type.intervalMonths?.toString() ?: "",
+                            nextDueOdometer = type.nextDueOdometer?.toString() ?: "",
                             description = type.description ?: "",
                             isEditing = true
                         )
@@ -93,6 +95,10 @@ class MaintenanceTypeFormViewModel @Inject constructor(
         _uiState.update { it.copy(intervalMonths = value) }
     }
 
+    fun updateNextDueOdometer(value: String) {
+        _uiState.update { it.copy(nextDueOdometer = value) }
+    }
+
     fun updateDescription(value: String) {
         _uiState.update { it.copy(description = value) }
     }
@@ -106,6 +112,7 @@ class MaintenanceTypeFormViewModel @Inject constructor(
         val name = state.name.trim()
         val intervalMiles = state.intervalMiles.toIntOrNull()
         val intervalMonths = state.intervalMonths.toIntOrNull()
+        val nextDueOdometer = state.nextDueOdometer.toIntOrNull()
 
         if (name.isBlank()) {
             _uiState.update { it.copy(error = "Name is required") }
@@ -113,6 +120,10 @@ class MaintenanceTypeFormViewModel @Inject constructor(
         }
         if (intervalMiles == null || intervalMiles <= 0) {
             _uiState.update { it.copy(error = "Enter a valid mileage interval") }
+            return
+        }
+        if (nextDueOdometer != null && nextDueOdometer <= 0) {
+            _uiState.update { it.copy(error = "Enter a valid odometer reading") }
             return
         }
 
@@ -123,6 +134,7 @@ class MaintenanceTypeFormViewModel @Inject constructor(
                 name = name,
                 intervalMiles = intervalMiles,
                 intervalMonths = intervalMonths,
+                nextDueOdometer = nextDueOdometer,
                 description = state.description.ifBlank { null }
             )
             if (typeId > 0) {

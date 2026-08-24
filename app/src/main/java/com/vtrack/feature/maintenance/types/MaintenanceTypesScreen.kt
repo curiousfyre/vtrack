@@ -1,6 +1,5 @@
 package com.vtrack.feature.maintenance.types
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,19 +30,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,10 +45,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.vtrack.ui.components.ConfirmDeleteDialog
 import com.vtrack.util.FormatUtil
 import com.vtrack.util.MaintenanceStatus
 import com.vtrack.util.MaintenanceUrgency
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,11 +61,20 @@ fun MaintenanceTypesScreen(
     viewModel: MaintenanceTypesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+    var typeToDelete by remember { mutableStateOf<MaintenanceStatus?>(null) }
+
+    typeToDelete?.let { status ->
+        ConfirmDeleteDialog(
+            itemName = status.type.name,
+            onConfirm = {
+                viewModel.deleteType(status.type)
+                typeToDelete = null
+            },
+            onDismiss = { typeToDelete = null }
+        )
+    }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (uiState.activeVehicleId != null) {
                 FloatingActionButton(
@@ -126,26 +128,13 @@ fun MaintenanceTypesScreen(
                         items = uiState.statuses,
                         key = { it.type.id }
                     ) { status ->
-                        SwipeToDismissMaintenanceCard(
+                        MaintenanceTypeCard(
                             status = status,
                             onClick = { onViewHistory(status.type.id) },
                             onEdit = {
                                 onEditType(uiState.activeVehicleId!!, status.type.id)
                             },
-                            onDismiss = {
-                                val deletedType = status.type
-                                viewModel.deleteType(deletedType)
-                                scope.launch {
-                                    val result = snackbarHostState.showSnackbar(
-                                        message = "${deletedType.name} deleted",
-                                        actionLabel = "Undo",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                    if (result == SnackbarResult.ActionPerformed) {
-                                        // Re-insert is not a perfect undo (new id), but functional
-                                    }
-                                }
-                            }
+                            onDelete = { typeToDelete = status }
                         )
                     }
                 }
@@ -154,57 +143,12 @@ fun MaintenanceTypesScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SwipeToDismissMaintenanceCard(
-    status: MaintenanceStatus,
-    onClick: () -> Unit,
-    onEdit: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { dismissValue ->
-            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                onDismiss()
-                true
-            } else {
-                false
-            }
-        }
-    )
-
-    SwipeToDismissBox(
-        state = dismissState,
-        backgroundContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 4.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    modifier = Modifier.padding(end = 24.dp),
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        },
-        enableDismissFromStartToEnd = false
-    ) {
-        MaintenanceTypeCard(
-            status = status,
-            onClick = onClick,
-            onEdit = onEdit
-        )
-    }
-}
-
 @Composable
 private fun MaintenanceTypeCard(
     status: MaintenanceStatus,
     onClick: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     val urgencyColor = when (status.urgency) {
         MaintenanceUrgency.OK -> Color(0xFF4CAF50)
@@ -267,6 +211,17 @@ private fun MaintenanceTypeCard(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit ${status.type.name}",
                             modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete ${status.type.name}",
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.error
                         )
                     }
                 }

@@ -149,4 +149,58 @@ class MaintenanceDueCalculatorTest {
         )
         assertThat(status.urgency).isEqualTo(MaintenanceUrgency.DUE_SOON)
     }
+
+    // nextDueOdometer override tests
+
+    @Test
+    fun `nextDueOdometer overrides interval when no last record`() {
+        val type = oilChangeType.copy(nextDueOdometer = 95000)
+        val status = MaintenanceDueCalculator.calculate(
+            type = type,
+            lastRecord = null,
+            currentOdometer = 93000,
+            vehicleInitialOdometer = 93000
+        )
+        assertThat(status.milesUntilDue).isEqualTo(2000)
+        assertThat(status.urgency).isEqualTo(MaintenanceUrgency.OK)
+    }
+
+    @Test
+    fun `nextDueOdometer shows OVERDUE when past due`() {
+        val type = oilChangeType.copy(nextDueOdometer = 95000)
+        val status = MaintenanceDueCalculator.calculate(
+            type = type,
+            lastRecord = null,
+            currentOdometer = 96000,
+            vehicleInitialOdometer = 93000
+        )
+        assertThat(status.milesUntilDue).isEqualTo(-1000)
+        assertThat(status.urgency).isEqualTo(MaintenanceUrgency.OVERDUE)
+    }
+
+    @Test
+    fun `nextDueOdometer ignored when last record is past override`() {
+        val type = oilChangeType.copy(nextDueOdometer = 95000)
+        val status = MaintenanceDueCalculator.calculate(
+            type = type,
+            lastRecord = makeRecord(odometer = 96000),
+            currentOdometer = 98000
+        )
+        // Falls back to interval: 96000 + 5000 = 101000, so 3000 until due
+        assertThat(status.milesUntilDue).isEqualTo(3000)
+        assertThat(status.urgency).isEqualTo(MaintenanceUrgency.OK)
+    }
+
+    @Test
+    fun `nextDueOdometer used when last record is before override`() {
+        val type = oilChangeType.copy(nextDueOdometer = 95000)
+        val status = MaintenanceDueCalculator.calculate(
+            type = type,
+            lastRecord = makeRecord(odometer = 90000),
+            currentOdometer = 93000
+        )
+        assertThat(status.milesUntilDue).isEqualTo(2000)
+        // percentUsed = 3000 / (95000 - 90000) = 0.6
+        assertThat(status.percentUsed).isWithin(0.001).of(0.6)
+    }
 }

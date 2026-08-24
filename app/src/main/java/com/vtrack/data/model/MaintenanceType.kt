@@ -26,6 +26,7 @@ data class MaintenanceType(
     val intervalMiles: Int,
     val intervalMonths: Int? = null,
     val description: String? = null,
+    val nextDueOdometer: Int? = null,
     val isActive: Boolean = true,
     val createdAt: Long = System.currentTimeMillis()
 )

@@ -25,8 +25,14 @@ object MaintenanceDueCalculator {
     ): MaintenanceStatus {
         val baseOdometer = lastRecord?.odometer ?: vehicleInitialOdometer
         val milesSince = currentOdometer - baseOdometer
-        val milesUntilDue = type.intervalMiles - milesSince
-        val percentUsed = if (type.intervalMiles > 0) milesSince.toDouble() / type.intervalMiles else 0.0
+
+        // Use nextDueOdometer override when set and not yet superseded by a service record
+        val useOverride = type.nextDueOdometer != null &&
+            (lastRecord == null || lastRecord.odometer < type.nextDueOdometer)
+        val nextDue = if (useOverride) type.nextDueOdometer!! else baseOdometer + type.intervalMiles
+        val milesUntilDue = nextDue - currentOdometer
+        val effectiveInterval = nextDue - baseOdometer
+        val percentUsed = if (effectiveInterval > 0) milesSince.toDouble() / effectiveInterval else 0.0
 
         val urgency = when {
             percentUsed >= 1.0 -> MaintenanceUrgency.OVERDUE

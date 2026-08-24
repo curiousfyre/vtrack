@@ -150,6 +150,18 @@ fun MaintenanceTypeFormScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Next due odometer (optional override)
+            OutlinedTextField(
+                value = uiState.nextDueOdometer,
+                onValueChange = { viewModel.updateNextDueOdometer(it) },
+                label = { Text("Next due at odometer (optional)") },
+                suffix = { Text("mi") },
+                supportingText = { Text("Override: set the exact odometer for the next service") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             // Description
             OutlinedTextField(
                 value = uiState.description,
