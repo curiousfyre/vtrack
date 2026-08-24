@@ -65,6 +65,18 @@ struct MaintenanceTypeFormScreen: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            Section {
+                HStack {
+                    TextField("Next due at odometer", text: $vm.nextDueOdometerString)
+                        .keyboardType(.numberPad)
+                    Text("mi")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Next Due Override")
+            } footer: {
+                Text("Override: set the exact odometer for the next service")
+            }
             Section("Description") {
                 TextField("Optional description", text: $vm.descriptionText, axis: .vertical)
                     .lineLimit(3...5)

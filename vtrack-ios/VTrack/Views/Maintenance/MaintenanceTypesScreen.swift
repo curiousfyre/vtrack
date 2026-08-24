@@ -19,22 +19,36 @@ struct MaintenanceTypesScreen: View {
                 } else {
                     List {
                         ForEach(vm.statuses, id: \.type.persistentModelID) { status in
-                            MaintenanceTypeRow(status: status) {
-                                let vehicleId = vm.activeVehicle!.persistentModelID.hashValue.description
-                                let typeId = status.type.persistentModelID.hashValue.description
-                                onEditType(vehicleId, typeId)
-                            }
+                            MaintenanceTypeRow(
+                                status: status,
+                                onEdit: {
+                                    let vehicleId = vm.activeVehicle!.persistentModelID.hashValue.description
+                                    let typeId = status.type.persistentModelID.hashValue.description
+                                    onEditType(vehicleId, typeId)
+                                },
+                                onDelete: {
+                                    vm.typeToDelete = status.type
+                                }
+                            )
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 onViewHistory(status.type.persistentModelID.hashValue.description)
                             }
                         }
-                        .onDelete { indexSet in
-                            for index in indexSet {
-                                vm.deleteType(vm.statuses[index].type)
+                    }
+                    .confirmDelete(
+                        itemName: vm.typeToDelete?.name ?? "",
+                        isPresented: .init(
+                            get: { vm.typeToDelete != nil },
+                            set: { if !$0 { vm.typeToDelete = nil } }
+                        ),
+                        onDelete: {
+                            if let type = vm.typeToDelete {
+                                vm.deleteType(type)
+                                vm.typeToDelete = nil
                             }
                         }
-                    }
+                    )
                 }
             } else {
                 ProgressView()
@@ -64,6 +78,7 @@ struct MaintenanceTypesScreen: View {
 struct MaintenanceTypeRow: View {
     let status: MaintenanceStatus
     let onEdit: () -> Void
+    let onDelete: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -75,6 +90,11 @@ struct MaintenanceTypeRow: View {
                 Button(action: onEdit) {
                     Image(systemName: "pencil")
                         .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.red)
                 }
                 .buttonStyle(.plain)
             }

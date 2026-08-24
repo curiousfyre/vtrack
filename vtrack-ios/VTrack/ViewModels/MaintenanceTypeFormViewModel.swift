@@ -23,6 +23,7 @@ final class MaintenanceTypeFormViewModel {
     var intervalMilesString = ""
     var intervalMonthsString = ""
     var descriptionText = ""
+    var nextDueOdometerString = ""
     var selectedPresetIndex: Int?
     var error: String?
     var isSaved = false
@@ -52,6 +53,9 @@ final class MaintenanceTypeFormViewModel {
                     self.intervalMonthsString = String(months)
                 }
                 self.descriptionText = type.descriptionText ?? ""
+                if let nextDue = type.nextDueOdometer {
+                    self.nextDueOdometerString = String(nextDue)
+                }
                 self.vehicle = type.vehicle
             }
         }
@@ -74,12 +78,14 @@ final class MaintenanceTypeFormViewModel {
             return false
         }
         let intervalMonths = Int(intervalMonthsString)
+        let nextDueOdometer = Int(nextDueOdometerString)
 
         if let type = editingType {
             type.name = name
             type.intervalMiles = intervalMiles
             type.intervalMonths = intervalMonths
             type.descriptionText = descriptionText.isEmpty ? nil : descriptionText
+            type.nextDueOdometer = nextDueOdometer
         } else {
             guard let vehicle else {
                 error = "No vehicle selected"
@@ -90,7 +96,8 @@ final class MaintenanceTypeFormViewModel {
                 name: name,
                 intervalMiles: intervalMiles,
                 intervalMonths: intervalMonths,
-                descriptionText: descriptionText.isEmpty ? nil : descriptionText
+                descriptionText: descriptionText.isEmpty ? nil : descriptionText,
+                nextDueOdometer: nextDueOdometer
             )
             modelContext.insert(type)
         }

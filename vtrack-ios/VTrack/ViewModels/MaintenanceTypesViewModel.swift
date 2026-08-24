@@ -6,6 +6,7 @@ final class MaintenanceTypesViewModel {
     var statuses: [MaintenanceStatus] = []
     var activeVehicle: Vehicle?
     var isLoading = true
+    var typeToDelete: MaintenanceType?
 
     private var modelContext: ModelContext
 

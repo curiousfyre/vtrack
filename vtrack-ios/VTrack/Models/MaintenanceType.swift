@@ -8,18 +8,20 @@ final class MaintenanceType {
     var intervalMiles: Int
     var intervalMonths: Int?
     var descriptionText: String?
+    var nextDueOdometer: Int?
     var isActive: Bool
     var createdAt: Date
 
     @Relationship(deleteRule: .cascade, inverse: \MaintenanceRecord.maintenanceType)
     var records: [MaintenanceRecord]
 
-    init(vehicle: Vehicle, name: String, intervalMiles: Int, intervalMonths: Int? = nil, descriptionText: String? = nil) {
+    init(vehicle: Vehicle, name: String, intervalMiles: Int, intervalMonths: Int? = nil, descriptionText: String? = nil, nextDueOdometer: Int? = nil) {
         self.vehicle = vehicle
         self.name = name
         self.intervalMiles = intervalMiles
         self.intervalMonths = intervalMonths
         self.descriptionText = descriptionText
+        self.nextDueOdometer = nextDueOdometer
         self.isActive = true
         self.createdAt = Date()
         self.records = []
