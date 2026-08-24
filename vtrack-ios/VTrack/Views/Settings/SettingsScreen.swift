@@ -50,7 +50,7 @@ struct SettingsScreen: View {
             Section {
                 HStack {
                     Spacer()
-                    Text("VTrack v1.0.0")
+                    Text("Autometer v1.0.0")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()

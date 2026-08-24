@@ -15,7 +15,7 @@ struct DashboardScreen: View {
                 if vm.vehicles.isEmpty {
                     EmptyStateView(
                         icon: "car.fill",
-                        title: "Welcome to VTrack!",
+                        title: "Welcome to Autometer!",
                         message: "Add your first vehicle to get started",
                         actionTitle: "Add Vehicle",
                         action: onAddVehicle

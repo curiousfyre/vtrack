@@ -15,7 +15,7 @@ struct ContentView: View {
                     onNavigateToFuelEntry: { vehicleId in dashboardPath.append(AppRoute.fuelEntry(vehicleId, nil)) },
                     onNavigateToMaintenanceTypes: { selectedTab = 2 }
                 )
-                .navigationTitle("VTrack")
+                .navigationTitle("Autometer")
                 .overflowMenu(path: $dashboardPath)
                 .navigationDestinations(path: $dashboardPath)
             }
