@@ -40,7 +40,7 @@ fun SettingsScreen(
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, csv)
             type = "text/csv"
-            putExtra(Intent.EXTRA_SUBJECT, "VTrack Fuel Data Export")
+            putExtra(Intent.EXTRA_SUBJECT, "Autometer Fuel Data Export")
         }
         val shareIntent = Intent.createChooser(sendIntent, "Export Fuel Data")
         context.startActivity(shareIntent)
@@ -111,7 +111,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = "VTrack v1.0.0",
+            text = "Autometer v1.0.0",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

@@ -62,7 +62,7 @@ fun AppNavHost() {
         Route.VehicleList.route -> "Vehicles"
         Route.Stats.route -> "Statistics"
         Route.Settings.route -> "Settings"
-        else -> "VTrack"
+        else -> "Autometer"
     }
 
     Scaffold(

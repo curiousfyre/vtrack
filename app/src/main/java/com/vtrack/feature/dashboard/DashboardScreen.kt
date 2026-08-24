@@ -103,7 +103,7 @@ private fun EmptyVehicleState(onAddVehicle: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Welcome to VTrack!",
+                text = "Welcome to Autometer!",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
