@@ -65,11 +65,19 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 - Added GPL-3.0 license, Fastlane metadata, screenshots, and icon for F-Droid
 - Submitted fdroiddata merge request (Aug 25, 2026)
 - GitHub username changed from tkraus13 to curiousfyre
+- Fixed F-Droid metadata: invalid `Money` category → `Finance Manager`, tag → full commit hash, field ordering (Aug 26, 2026)
+- Enabled reproducible builds for F-Droid (v1.1.1, Aug 26, 2026):
+  - Disabled baseline profile compilation (`CompileArtProfileTask`) — non-deterministic output
+  - Disabled VCS info embedding (`vcsInfo.include = false`) and dependency info block
+  - Fixed R8 ServiceLoader nondeterminism via proguard keep rules for kotlinx.coroutines classes
+  - Set `org.gradle.workers.max=1` for deterministic DEX output regardless of CPU core count
+  - Verified: three consecutive no-cache builds produce identical SHA-256 hashes
+- Bumped to v1.1.1 (versionCode 3) with `Binaries` and `AllowedAPKSigningKeys` in fdroiddata metadata — F-Droid will verify reproducibility and publish the developer-signed APK
 
 ## Next Session
 
 ### Priority: App Distribution
-1. **F-Droid** — MR submitted to fdroiddata (Aug 25, 2026). GPL-3.0 licensed, Fastlane metadata in repo, auto-update via tags enabled. Future releases just need: bump version in build.gradle.kts, tag, push — F-Droid picks it up automatically.
+1. **F-Droid** — MR submitted to fdroiddata (Aug 25, 2026), updated with v1.1.1 reproducible build (Aug 26). Awaiting CI verification and reviewer approval. Metadata includes `Binaries` and `AllowedAPKSigningKeys` so F-Droid publishes the developer-signed APK. Future releases: bump version in build.gradle.kts, tag, push, create GitHub release with signed APK — F-Droid picks it up automatically.
 2. **Submit to TestFlight** — configure Xcode signing with Apple Developer account, archive iOS build, upload to App Store Connect, set up TestFlight beta testing group
 
 ### Roadmap
