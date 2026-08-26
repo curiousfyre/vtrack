@@ -62,11 +62,14 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 - Merged iOS app into master branch
 - Renamed display name from VTrack to Autometer (both platforms)
 - Published v1.1.0 release on GitHub
+- Added GPL-3.0 license, Fastlane metadata, screenshots, and icon for F-Droid
+- Submitted fdroiddata merge request (Aug 25, 2026)
+- GitHub username changed from tkraus13 to curiousfyre
 
 ## Next Session
 
 ### Priority: App Distribution
-1. **Submit to F-Droid** — make repo public, add LICENSE (GPL/AGPL), add Fastlane metadata structure (`fastlane/metadata/android/`), submit merge request to fdroiddata repo
+1. **F-Droid** — MR submitted to fdroiddata (Aug 25, 2026). GPL-3.0 licensed, Fastlane metadata in repo, auto-update via tags enabled. Future releases just need: bump version in build.gradle.kts, tag, push — F-Droid picks it up automatically.
 2. **Submit to TestFlight** — configure Xcode signing with Apple Developer account, archive iOS build, upload to App Store Connect, set up TestFlight beta testing group
 
 ### Bugs (confirmed on-device Aug 10)
@@ -74,7 +77,7 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 2. **"Unknown" initial odometer** — Users should be able to skip the initial odometer reading when adding a vehicle. Make `initialOdometer` nullable. Fixes the junk MPG problem when someone doesn't know their exact odometer.
 
 ### Roadmap (after distribution)
-1. Add proper **launcher icons** (currently default mipmap placeholders)
+1. Add proper **launcher icons** (generated odometer icon in fastlane, still need to replace Android mipmap resources)
 2. DAO integration tests (Robolectric, in-memory Room DB)
 3. Odometer validation: enforce monotonically increasing per vehicle
 4. First-run experience (welcome flow -> add vehicle -> setup maintenance presets)
