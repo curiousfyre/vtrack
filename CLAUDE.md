@@ -72,13 +72,8 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 1. **F-Droid** — MR submitted to fdroiddata (Aug 25, 2026). GPL-3.0 licensed, Fastlane metadata in repo, auto-update via tags enabled. Future releases just need: bump version in build.gradle.kts, tag, push — F-Droid picks it up automatically.
 2. **Submit to TestFlight** — configure Xcode signing with Apple Developer account, archive iOS build, upload to App Store Connect, set up TestFlight beta testing group
 
-### Bugs (confirmed on-device Aug 10)
-1. **First fill-up baseline problem** — App uses `initialOdometer` as a fake "previous fill" baseline, producing wrong MPG. Fix: first fill-up should always be treated as a baseline entry (record data but never calculate MPG from it). MPG starts from fill-up #2. This is standard Fuelly/Fuelio behavior.
-2. **"Unknown" initial odometer** — Users should be able to skip the initial odometer reading when adding a vehicle. Make `initialOdometer` nullable. Fixes the junk MPG problem when someone doesn't know their exact odometer.
-
-### Roadmap (after distribution)
-1. Add proper **launcher icons** (generated odometer icon in fastlane, still need to replace Android mipmap resources)
-2. DAO integration tests (Robolectric, in-memory Room DB)
+### Roadmap
+1. DAO integration tests (Robolectric, in-memory Room DB)
 3. Odometer validation: enforce monotonically increasing per vehicle
 4. First-run experience (welcome flow -> add vehicle -> setup maintenance presets)
 
