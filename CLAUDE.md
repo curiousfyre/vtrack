@@ -50,7 +50,7 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 3-tab bottom bar (Dashboard/Fuel/Maintenance) + overflow menu (Vehicles, Settings, Statistics)
 
 ## Release
-- GitHub: `tkraus13/vtrack` (currently **private** — needs to be made public for F-Droid)
+- GitHub: `curiousfyre/vtrack`
 - v1.1.0 release APK: 2.1MB, minified with R8
 - Room DB version 3 (migrations: 1→2 nullable odometer, 2→3 nextDueOdometer)
 - 49 unit tests (MpgCalculator, MaintenanceDueCalculator, FormatUtil, Routes)

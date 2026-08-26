@@ -1,0 +1,4 @@
+* Renamed app to Autometer
+* Added optional next-due-odometer override for maintenance types
+* Replaced swipe-to-delete with visible delete button and confirmation dialog
+* Bug fixes and UI improvements

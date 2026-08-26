@@ -1,0 +1,11 @@
+Autometer is a simple, private vehicle tracker for fuel economy and maintenance schedules. All data stays on your device.
+
+Features:
+* Track fuel fill-ups and calculate MPG with partial fill support
+* Set up maintenance schedules (oil changes, tire rotations, etc.) by mileage interval
+* Dashboard showing fuel economy trends and upcoming maintenance
+* Maintenance urgency indicators (OK, Due Soon, Overdue)
+* Daily notifications when maintenance is due
+* Support for multiple vehicles
+* Statistics with fuel economy charts
+* No account required, no cloud, no tracking
