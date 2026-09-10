@@ -8,8 +8,10 @@ import com.vtrack.data.repository.MaintenanceRepository
 import com.vtrack.data.repository.VehicleRepository
 import com.vtrack.util.MaintenanceDueCalculator
 import com.vtrack.util.MaintenanceUrgency
+import com.vtrack.util.PreferencesManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -18,10 +20,15 @@ class MaintenanceCheckWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val vehicleRepository: VehicleRepository,
     private val fuelRepository: FuelRepository,
-    private val maintenanceRepository: MaintenanceRepository
+    private val maintenanceRepository: MaintenanceRepository,
+    private val preferencesManager: PreferencesManager
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
+        if (!preferencesManager.notificationsEnabled.first()) {
+            return Result.success()
+        }
+
         val vehicles = vehicleRepository.getAllActiveList()
 
         for (vehicle in vehicles) {
@@ -39,12 +46,12 @@ class MaintenanceCheckWorker @AssistedInject constructor(
                 when (status.urgency) {
                     MaintenanceUrgency.OVERDUE -> NotificationHelper.fireNotification(
                         applicationContext, notificationId,
-                        "Maintenance Overdue \u2014 ${vehicle.name}",
+                        "Maintenance Overdue — ${vehicle.name}",
                         "${type.name} is overdue by ${-status.milesUntilDue} miles"
                     )
                     MaintenanceUrgency.DUE_SOON -> NotificationHelper.fireNotification(
                         applicationContext, notificationId,
-                        "Maintenance Due Soon \u2014 ${vehicle.name}",
+                        "Maintenance Due Soon — ${vehicle.name}",
                         "${type.name} due in ${status.milesUntilDue} miles"
                     )
                     MaintenanceUrgency.OK -> { /* no notification */ }

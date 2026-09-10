@@ -20,8 +20,8 @@ android {
         applicationId = "com.vtrack"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.1.1"
+        versionCode = 4
+        versionName = "1.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -70,6 +70,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     room {
@@ -121,6 +122,7 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.work)
+    ksp(libs.hilt.work.compiler)
 
     // WorkManager
     implementation(libs.workmanager)

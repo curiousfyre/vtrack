@@ -1,6 +1,10 @@
 package com.vtrack.feature.settings
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.vtrack.BuildConfig
 
 @Composable
 fun SettingsScreen(
@@ -33,6 +38,12 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        viewModel.toggleNotifications(granted)
+    }
 
     LaunchedEffect(uiState.exportCsvContent) {
         val csv = uiState.exportCsvContent ?: return@LaunchedEffect
@@ -75,7 +86,13 @@ fun SettingsScreen(
                 }
                 Switch(
                     checked = uiState.notificationsEnabled,
-                    onCheckedChange = { viewModel.toggleNotifications(it) }
+                    onCheckedChange = { enabled ->
+                        if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            viewModel.toggleNotifications(enabled)
+                        }
+                    }
                 )
             }
         }
@@ -111,7 +128,7 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = "Autometer v1.0.0",
+            text = "Autometer v${BuildConfig.VERSION_NAME}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

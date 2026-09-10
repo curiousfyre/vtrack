@@ -78,7 +78,15 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 
 ### Priority: App Distribution
 1. **F-Droid** — MR submitted to fdroiddata (Aug 25, 2026), updated with v1.1.1 reproducible build (Aug 26). Awaiting CI verification and reviewer approval. Metadata includes `Binaries` and `AllowedAPKSigningKeys` so F-Droid publishes the developer-signed APK. Future releases: bump version in build.gradle.kts, tag, push, create GitHub release with signed APK — F-Droid picks it up automatically.
-2. **Submit to TestFlight** — configure Xcode signing with Apple Developer account, archive iOS build, upload to App Store Connect, set up TestFlight beta testing group
+2. **Apple App Store** — contacted Apple Developer support (Aug 26, 2026) to resolve payment block on $99/year enrollment. Three different cards from three banks all rejected — account-level issue on Apple's side. Once resolved: configure Xcode signing, archive iOS build, upload to App Store Connect, set up TestFlight beta testing group.
+3. **Google Play Store** — $25 one-time developer account needed. Create listing (Auto & Vehicles category), generate AAB with `./gradlew bundleRelease`, enroll in Play App Signing, submit for review.
+
+### Next: Monetization (v1.2.0)
+Free tier (ads, 1 vehicle) + one-time premium purchase (no ads, unlimited vehicles). F-Droid stays fully free and unlimited.
+
+**Android:** Add `foss`/`play` Gradle product flavors. `BillingManager` + `AdManager` interfaces in main source, no-op stubs in `foss/`, Google Play Billing + AdMob in `play/`. Hilt DI per flavor. Gate vehicle add in `VehicleFormViewModel`, banner ad on Dashboard. F-Droid metadata changes from `gradle: - yes` to `gradle: - foss` for v1.2.0+. Full plan in memory: `project_store_distribution.md`.
+
+**iOS:** StoreKit 2 for one-time purchase (native Swift, no third-party SDK). AdMob for ads. Same gating logic. Work via Remote Control on Mac.
 
 ### Roadmap
 1. DAO integration tests (Robolectric, in-memory Room DB)

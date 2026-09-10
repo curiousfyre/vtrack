@@ -6,6 +6,7 @@ compose-bom = "2025.01.01"
 room = "2.6.1"
 hilt = "2.51.1"
 hilt-navigation-compose = "1.2.0"
+hilt-work-compiler = "1.2.0"
 navigation-compose = "2.8.6"
 workmanager = "2.10.0"
 vico = "2.0.0-beta.4"
@@ -42,6 +43,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt-navigation-compose" }
+hilt-work-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt-work-compiler" }
 
 workmanager = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workmanager" }
 
