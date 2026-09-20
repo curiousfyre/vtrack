@@ -304,6 +304,11 @@ private fun FuelEntryCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
+                    text = FormatUtil.formatPricePerGallon(entry.pricePerGallon),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
                     text = FormatUtil.formatCurrency(entry.totalCost),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,

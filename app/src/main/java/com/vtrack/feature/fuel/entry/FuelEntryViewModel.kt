@@ -13,12 +13,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+enum class PriceInputMode { PRICE_PER_GALLON, TOTAL_COST }
+
 data class FuelEntryUiState(
     val date: Long = System.currentTimeMillis(),
     val odometer: String = "",
     val gallons: String = "",
     val pricePerGallon: String = "",
     val totalCost: String = "",
+    val priceInputMode: PriceInputMode = PriceInputMode.PRICE_PER_GALLON,
     val isPartialFill: Boolean = false,
     val notes: String = "",
     val isEditing: Boolean = false,
@@ -68,17 +71,39 @@ class FuelEntryViewModel @Inject constructor(
     }
 
     fun updateGallons(value: String) {
-        _uiState.update { it.copy(gallons = value) }
-        autoCalculateTotalCost()
+        _uiState.update {
+            val g = value.toDoubleOrNull()
+            when (it.priceInputMode) {
+                PriceInputMode.PRICE_PER_GALLON -> {
+                    val p = it.pricePerGallon.toDoubleOrNull()
+                    val total = if (g != null && p != null) roundCost(g * p).toString() else it.totalCost
+                    it.copy(gallons = value, totalCost = total)
+                }
+                PriceInputMode.TOTAL_COST -> {
+                    val t = it.totalCost.toDoubleOrNull()
+                    val price = if (g != null && g > 0 && t != null) roundPrice(t / g).toString() else it.pricePerGallon
+                    it.copy(gallons = value, pricePerGallon = price)
+                }
+            }
+        }
     }
 
     fun updatePricePerGallon(value: String) {
-        _uiState.update { it.copy(pricePerGallon = value) }
-        autoCalculateTotalCost()
+        _uiState.update {
+            val g = it.gallons.toDoubleOrNull()
+            val p = value.toDoubleOrNull()
+            val total = if (g != null && p != null) roundCost(g * p).toString() else it.totalCost
+            it.copy(pricePerGallon = value, priceInputMode = PriceInputMode.PRICE_PER_GALLON, totalCost = total)
+        }
     }
 
     fun updateTotalCost(value: String) {
-        _uiState.update { it.copy(totalCost = value) }
+        _uiState.update {
+            val g = it.gallons.toDoubleOrNull()
+            val t = value.toDoubleOrNull()
+            val price = if (g != null && g > 0 && t != null) roundPrice(t / g).toString() else it.pricePerGallon
+            it.copy(totalCost = value, priceInputMode = PriceInputMode.TOTAL_COST, pricePerGallon = price)
+        }
     }
 
     fun updateIsPartialFill(value: Boolean) {
@@ -93,15 +118,9 @@ class FuelEntryViewModel @Inject constructor(
         _uiState.update { it.copy(error = null) }
     }
 
-    private fun autoCalculateTotalCost() {
-        val state = _uiState.value
-        val g = state.gallons.toDoubleOrNull()
-        val p = state.pricePerGallon.toDoubleOrNull()
-        if (g != null && p != null) {
-            val total = Math.round(g * p * 100.0) / 100.0
-            _uiState.update { it.copy(totalCost = total.toString()) }
-        }
-    }
+    private fun roundCost(value: Double): Double = Math.round(value * 100.0) / 100.0
+
+    private fun roundPrice(value: Double): Double = Math.round(value * 1000.0) / 1000.0
 
     fun save() {
         val state = _uiState.value
@@ -118,12 +137,15 @@ class FuelEntryViewModel @Inject constructor(
             _uiState.update { it.copy(error = "Enter gallons filled") }
             return
         }
-        if (price == null || price <= 0) {
-            _uiState.update { it.copy(error = "Enter price per gallon") }
+        if ((price == null || price <= 0) && (total == null || total <= 0)) {
+            _uiState.update { it.copy(error = "Enter price per gallon or total cost") }
             return
         }
 
-        val finalTotal = total ?: (Math.round(gallons * price * 100.0) / 100.0)
+        val finalPrice = if (price != null && price > 0) price
+            else roundPrice(total!! / gallons)
+        val finalTotal = if (total != null && total > 0) total
+            else roundCost(gallons * finalPrice)
 
         viewModelScope.launch {
             val entry = FuelEntry(
@@ -132,7 +154,7 @@ class FuelEntryViewModel @Inject constructor(
                 date = state.date,
                 odometer = odometer,
                 gallons = gallons,
-                pricePerGallon = price,
+                pricePerGallon = finalPrice,
                 totalCost = finalTotal,
                 isPartialFill = state.isPartialFill,
                 notes = state.notes.ifBlank { null }

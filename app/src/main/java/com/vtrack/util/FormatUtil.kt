@@ -17,4 +17,5 @@ object FormatUtil {
     fun formatMpg(mpg: Double): String = "${numberFormat.format(mpg)} MPG"
     fun formatMiles(miles: Int): String = "${NumberFormat.getIntegerInstance(Locale.US).format(miles)} mi"
     fun formatGallons(gallons: Double): String = "${numberFormat.format(gallons)} gal"
+    fun formatPricePerGallon(price: Double): String = "${currencyFormat.format(price)}/gal"
 }
