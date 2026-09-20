@@ -1,6 +1,6 @@
 # Autometer — Vehicle Fuel & Maintenance Tracker (Android + iOS)
 
-v1.1.0 released on GitHub (Aug 23, 2026). Dual-platform app for tracking fuel economy and maintenance schedules. Display name is "Autometer"; package/bundle IDs remain `com.vtrack`.
+v1.2.0 released on GitHub (Sep 19, 2026). Dual-platform app for tracking fuel economy and maintenance schedules. Display name is "Autometer"; package/bundle IDs remain `com.vtrack`.
 
 ## Quick Reference
 
@@ -51,40 +51,41 @@ MVVM + StateFlow. 4 Room entities, 4 DAOs, 3 repositories, 11 screens + 11 ViewM
 
 ## Release
 - GitHub: `curiousfyre/vtrack`
-- v1.1.0 release APK: 2.1MB, minified with R8
+- Latest: v1.2.0 (versionCode 5, Sep 19, 2026)
 - Room DB version 3 (migrations: 1→2 nullable odometer, 2→3 nextDueOdometer)
 - 49 unit tests (MpgCalculator, MaintenanceDueCalculator, FormatUtil, Routes)
 - Gitleaks pre-commit hook for secret scanning
+- F-Droid: auto-updates via `AutoUpdateMode`/`UpdateCheckMode` on tags — no fdroiddata MR needed for routine releases
 
-## Recent Changes (Aug 23, 2026)
-- Added `nextDueOdometer` optional override on MaintenanceType (both platforms)
-- Replaced hidden swipe-to-delete with visible delete button + confirmation dialog (both platforms)
-- Merged iOS app into master branch
-- Renamed display name from VTrack to Autometer (both platforms)
-- Published v1.1.0 release on GitHub
-- Added GPL-3.0 license, Fastlane metadata, screenshots, and icon for F-Droid
-- Submitted fdroiddata merge request (Aug 25, 2026)
-- GitHub username changed from tkraus13 to curiousfyre
-- Fixed F-Droid metadata: invalid `Money` category → `Finance Manager`, tag → full commit hash, field ordering (Aug 26, 2026)
-- Enabled reproducible builds for F-Droid (v1.1.1, Aug 26, 2026):
-  - Disabled baseline profile compilation (`CompileArtProfileTask`) — non-deterministic output
-  - Disabled VCS info embedding (`vcsInfo.include = false`) and dependency info block
-  - Fixed R8 ServiceLoader nondeterminism via proguard keep rules for kotlinx.coroutines classes
-  - Set `org.gradle.workers.max=1` for deterministic DEX output regardless of CPU core count
-  - Verified: three consecutive no-cache builds produce identical SHA-256 hashes
-- Bumped to v1.1.1 (versionCode 3) with `Binaries` and `AllowedAPKSigningKeys` in fdroiddata metadata — F-Droid will verify reproducibility and publish the developer-signed APK
+## Recent Changes (Sep 19, 2026)
+- Bidirectional fuel price entry: user can enter either price per gallon or total cost, other auto-calculates (Android only — iOS needs same update)
+- Price per gallon now displayed on each fill-up card in the fuel list (Android only — iOS needs same update)
+- PriceInputMode enum tracks last-edited field to prevent circular auto-calculation
+- Validation relaxed: save requires either price per gallon or total cost (not both)
+- Added `formatPricePerGallon` to FormatUtil
+- Released v1.2.0 (versionCode 5) on GitHub with signed APK
+
+### Earlier Changes
+- v1.1.2: Fix F-Droid reviewer findings
+- v1.1.1: Reproducible builds for F-Droid (disabled baseline profiles, VCS info, fixed R8 nondeterminism, single Gradle worker)
+- v1.1.0: nextDueOdometer override, visible delete buttons, iOS merge, Autometer rename, F-Droid submission, GPL-3.0 license
 
 ## Next Session
 
-### Priority: App Distribution
-1. **F-Droid** — MR submitted to fdroiddata (Aug 25, 2026), updated with v1.1.1 reproducible build (Aug 26). Awaiting CI verification and reviewer approval. Metadata includes `Binaries` and `AllowedAPKSigningKeys` so F-Droid publishes the developer-signed APK. Future releases: bump version in build.gradle.kts, tag, push, create GitHub release with signed APK — F-Droid picks it up automatically.
+### Priority: iOS Parity
+- Bidirectional fuel price entry (enter price per gallon or total cost) — needs same ViewModel logic in Swift
+- Price per gallon display on fuel list cards — needs SwiftUI update
+- Work via Remote Control on Tim's Mac
+
+### App Distribution
+1. **F-Droid** — Live. Auto-updates via tags. Release process: bump version in build.gradle.kts, tag, push, create GitHub release with signed APK. No fdroiddata MR needed unless build config changes (e.g. adding product flavors).
 2. **Apple App Store** — contacted Apple Developer support (Aug 26, 2026) to resolve payment block on $99/year enrollment. Three different cards from three banks all rejected — account-level issue on Apple's side. Once resolved: configure Xcode signing, archive iOS build, upload to App Store Connect, set up TestFlight beta testing group.
 3. **Google Play Store** — $25 one-time developer account needed. Create listing (Auto & Vehicles category), generate AAB with `./gradlew bundleRelease`, enroll in Play App Signing, submit for review.
 
-### Next: Monetization (v1.2.0)
+### Next: Monetization (v1.3.0)
 Free tier (ads, 1 vehicle) + one-time premium purchase (no ads, unlimited vehicles). F-Droid stays fully free and unlimited.
 
-**Android:** Add `foss`/`play` Gradle product flavors. `BillingManager` + `AdManager` interfaces in main source, no-op stubs in `foss/`, Google Play Billing + AdMob in `play/`. Hilt DI per flavor. Gate vehicle add in `VehicleFormViewModel`, banner ad on Dashboard. F-Droid metadata changes from `gradle: - yes` to `gradle: - foss` for v1.2.0+. Full plan in memory: `project_store_distribution.md`.
+**Android:** Add `foss`/`play` Gradle product flavors. `BillingManager` + `AdManager` interfaces in main source, no-op stubs in `foss/`, Google Play Billing + AdMob in `play/`. Hilt DI per flavor. Gate vehicle add in `VehicleFormViewModel`, banner ad on Dashboard. F-Droid metadata changes from `gradle: - yes` to `gradle: - foss`. Full plan in memory: `project_store_distribution.md`.
 
 **iOS:** StoreKit 2 for one-time purchase (native Swift, no third-party SDK). AdMob for ads. Same gating logic. Work via Remote Control on Mac.
 
